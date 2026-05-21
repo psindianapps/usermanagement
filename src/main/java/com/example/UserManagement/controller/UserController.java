@@ -3,6 +3,7 @@ package com.example.UserManagement.controller;
 
 import com.example.UserManagement.dto.request.UserRequest;
 import com.example.UserManagement.dto.response.UserResponse;
+import com.example.UserManagement.projection.UserProjection;
 import com.example.UserManagement.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class UserController {
     public ResponseEntity<Map<String,Object>> alluser(@RequestParam Map<String,String> request){
         Map<String,Object> response = new HashMap<>();
         try{
-            List<UserResponse> userResponses = userService.alluser(request);
+            List<UserProjection> userResponses = userService.alluser(request);
             response.put("status",200);
             response.put("data",userResponses);
         } catch (Exception e) {

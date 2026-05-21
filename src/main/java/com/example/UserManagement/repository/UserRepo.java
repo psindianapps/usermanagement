@@ -1,7 +1,7 @@
 package com.example.UserManagement.repository;
 
-import com.example.UserManagement.dto.response.UserResponse;
 import com.example.UserManagement.entity.UserEntity;
+import com.example.UserManagement.projection.UserProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -9,6 +9,17 @@ import java.util.List;
 
 public interface UserRepo extends JpaRepository<UserEntity, Long> {
 
-    @Query(value = "Select name, username, email, dob, gender, is_active, created_at, updated_at From users")
-    List<UserResponse> getAllUsers();
+    @Query(value = """
+    Select 
+        name as name,
+        username as username,
+        email as email,
+        dob as dob,
+        gender as gender,
+        is_active as isActive,
+        created_at as createdAt,
+        updated_at as updatedAt
+    From users
+    """, nativeQuery = true)
+    List<UserProjection> getAllUsers();
 }

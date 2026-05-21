@@ -1,8 +1,8 @@
 package com.example.UserManagement.service;
 
 import com.example.UserManagement.dto.request.UserRequest;
-import com.example.UserManagement.dto.response.UserResponse;
 import com.example.UserManagement.entity.UserEntity;
+import com.example.UserManagement.projection.UserProjection;
 import com.example.UserManagement.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ public class UserService {
 
     @Autowired private UserRepo userRepo;
 
-    public List<UserResponse> alluser(Map<String, String> filter){
+    public List<UserProjection> alluser(Map<String, String> filter){
         return  userRepo.getAllUsers();
     }
 
