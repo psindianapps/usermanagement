@@ -1,14 +1,23 @@
 server:
   port: 8080
 
+app:
+  base-url: http://localhost:8080/
+
 spring:
   application:
     name: UserManagement
 
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 1MB
+      max-request-size: 1MB
+
   datasource:
     url: jdbc:mysql://localhost:3306/user_management?useSSL=false&serverTimezone=UTC
     username: root
-    password: root
+    password:
 
   jackson:
     serialization:

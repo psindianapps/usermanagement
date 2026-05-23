@@ -4,6 +4,7 @@ CREATE TABLE users (
     username   VARCHAR(255) NOT NULL,
     email      VARCHAR(255) NOT NULL,
     password   VARCHAR(255) NOT NULL,
+    profileImage   VARCHAR(255) NOT NULL,
     gender     VARCHAR(10) NOT NULL,
     dob        DATE,
     isActice   INT  DEFAULT 0,

@@ -1,12 +1,21 @@
 package com.example.UserManagement.service;
 
 import com.example.UserManagement.dto.request.UserRequest;
+import com.example.UserManagement.dto.response.UserResponse;
 import com.example.UserManagement.entity.UserEntity;
 import com.example.UserManagement.projection.UserProjection;
 import com.example.UserManagement.repository.UserRepo;
+import com.example.UserManagement.util.FileUrlUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -14,12 +23,39 @@ import java.util.Map;
 public class UserService {
 
     @Autowired private UserRepo userRepo;
+    @Autowired private FileUrlUtil fileUrlUtil;
 
-    public List<UserProjection> alluser(Map<String, String> filter){
-        return  userRepo.getAllUsers();
+    public List<UserResponse> alluser(Map<String, String> filter){
+
+        List<UserProjection> projection =  userRepo.getAllUsers();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd MMM, yyyy");
+        return projection.stream().map(user -> {
+            UserResponse response = new UserResponse();
+            response.setName(user.getName());
+            response.setUsername(user.getUsername());
+            response.setEmail(user.getEmail());
+            response.setCreatedAt(user.getCreatedAt());
+            response.setUpdatedAt(user.getUpdatedAt());
+            response.setDob(user.getDob() != null ? user.getDob().format(dateTimeFormatter) : null);
+            response.setIsActive(user.getIsActive() ==1 ? "active" : "inactive");
+            response.setProfileImage(user.getProfileImage() != null ? fileUrlUtil.getImageUrl(user.getProfileImage()) : "");
+            return response;
+        }).toList();
     }
 
-    public void createUser(UserRequest userRequest) {
+    public void createUser(UserRequest userRequest) throws IOException {
+        MultipartFile profileImage = userRequest.getProfileImage();
+        String uploadDir = "uploads/";
+        File directory = new File(uploadDir);
+        if(!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        String fileName = System.currentTimeMillis()+ "_"+ profileImage.getOriginalFilename();
+        String filePath = uploadDir + fileName;
+        Path path = Paths.get(uploadDir, fileName);
+        Files.copy(profileImage.getInputStream(), path);
+
         UserEntity userEntity = new UserEntity();
         userEntity.setName(userRequest.getName());
         userEntity.setUsername(userRequest.getUsername());
@@ -27,6 +63,7 @@ public class UserService {
         userEntity.setPassword(userRequest.getPassword());
         userEntity.setDob(userRequest.getDob());
         userEntity.setGender(userRequest.getGender());
+        userEntity.setProfileImage(filePath);
         userRepo.save(userEntity);
     }
 }

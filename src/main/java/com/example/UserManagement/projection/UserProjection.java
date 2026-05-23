@@ -12,6 +12,7 @@ public interface UserProjection {
     LocalDate getDob();
     String getGender();
     Integer getIsActive();
+    String getProfileImage();
     LocalDateTime getCreatedAt();
     LocalDateTime getUpdatedAt();
 }

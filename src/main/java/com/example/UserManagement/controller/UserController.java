@@ -5,12 +5,16 @@ import com.example.UserManagement.dto.request.UserRequest;
 import com.example.UserManagement.dto.response.UserResponse;
 import com.example.UserManagement.projection.UserProjection;
 import com.example.UserManagement.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.attribute.standard.Media;
+import javax.print.attribute.standard.MediaTray;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +30,7 @@ public class UserController {
     public ResponseEntity<Map<String,Object>> alluser(@RequestParam Map<String,String> request){
         Map<String,Object> response = new HashMap<>();
         try{
-            List<UserProjection> userResponses = userService.alluser(request);
+            List<UserResponse> userResponses = userService.alluser(request);
             response.put("status",200);
             response.put("data",userResponses);
         } catch (Exception e) {
@@ -36,8 +40,8 @@ public class UserController {
         return  ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<Map<String, Object>> createUser(@RequestBody UserRequest request) {
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, Object>> createUser(@ModelAttribute @Valid UserRequest request) {
         Map<String, Object> response = new HashMap<>();
         try{
             userService.createUser(request);

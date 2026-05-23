@@ -10,9 +10,10 @@ public class UserResponse {
     private String name;
     private String email;
     private String username;
-    private LocalDate dob;
+    private String dob;
+    private String profileImage;
     private String gender;
-    private int isActive;
+    private String isActive;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

@@ -2,6 +2,7 @@ package com.example.UserManagement.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,11 +34,14 @@ public class UserEntity {
     @NotBlank
     private String password;
 
-    @NotBlank
+    @NotNull
     private LocalDate dob;
 
     @NotBlank
     private String gender;
+
+    @NotBlank
+    private String profileImage;
 
     @Builder.Default
     private int isActive = 0;

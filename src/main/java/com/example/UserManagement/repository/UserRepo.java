@@ -16,6 +16,7 @@ public interface UserRepo extends JpaRepository<UserEntity, Long> {
         email as email,
         dob as dob,
         gender as gender,
+        profile_image as profileImage,
         is_active as isActive,
         created_at as createdAt,
         updated_at as updatedAt
