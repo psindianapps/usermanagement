@@ -12,4 +12,5 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
     private String baseUrl;
     private int maxFileSize;
+    private int pageSize;
 }

@@ -7,6 +7,7 @@ import com.example.UserManagement.projection.UserProjection;
 import com.example.UserManagement.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +29,10 @@ public class UserController {
 
     @GetMapping("/all")
     public ResponseEntity<Map<String,Object>> alluser(@RequestParam Map<String,String> request){
+
         Map<String,Object> response = new HashMap<>();
         try{
-            List<UserResponse> userResponses = userService.alluser(request);
+            Page<UserResponse> userResponses = userService.alluser(request);
             response.put("status",200);
             response.put("data",userResponses);
         } catch (Exception e) {
