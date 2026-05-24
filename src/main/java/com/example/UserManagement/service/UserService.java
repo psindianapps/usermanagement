@@ -1,5 +1,6 @@
 package com.example.UserManagement.service;
 
+import com.example.UserManagement.config.FileConfig;
 import com.example.UserManagement.dto.request.UserRequest;
 import com.example.UserManagement.dto.response.UserResponse;
 import com.example.UserManagement.entity.UserEntity;
@@ -24,6 +25,7 @@ public class UserService {
 
     @Autowired private UserRepo userRepo;
     @Autowired private FileUrlUtil fileUrlUtil;
+    @Autowired private FileConfig fileConfig;
 
     public List<UserResponse> alluser(Map<String, String> filter){
 
@@ -46,15 +48,21 @@ public class UserService {
     public void createUser(UserRequest userRequest) throws IOException {
         MultipartFile profileImage = userRequest.getProfileImage();
         String uploadDir = "uploads/";
-        File directory = new File(uploadDir);
-        if(!directory.exists()) {
-            directory.mkdirs();
+//        File directory = new File(uploadDir);
+//        if(!directory.exists()) {
+//            directory.mkdirs();
+//        }
+//
+//        String fileName = System.currentTimeMillis()+ "_"+ profileImage.getOriginalFilename();
+//        String filePath = uploadDir + fileName;
+//        Path path = Paths.get(uploadDir, fileName);
+//        Files.copy(profileImage.getInputStream(), path);
+        Map<String, String> response;
+        try {
+             response =  fileConfig.uploadImage(uploadDir,profileImage);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-        String fileName = System.currentTimeMillis()+ "_"+ profileImage.getOriginalFilename();
-        String filePath = uploadDir + fileName;
-        Path path = Paths.get(uploadDir, fileName);
-        Files.copy(profileImage.getInputStream(), path);
 
         UserEntity userEntity = new UserEntity();
         userEntity.setName(userRequest.getName());
@@ -63,7 +71,7 @@ public class UserService {
         userEntity.setPassword(userRequest.getPassword());
         userEntity.setDob(userRequest.getDob());
         userEntity.setGender(userRequest.getGender());
-        userEntity.setProfileImage(filePath);
+        userEntity.setProfileImage(response.get("filePath"));
         userRepo.save(userEntity);
     }
 }
