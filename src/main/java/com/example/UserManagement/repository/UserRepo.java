@@ -5,45 +5,34 @@ import com.example.UserManagement.projection.UserProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface UserRepo extends JpaRepository<UserEntity, Long> {
+public interface UserRepo extends JpaRepository<UserEntity, Long>, JpaSpecificationExecutor<UserEntity> {
 
     @Query(value = """
-    Select 
-        name as name,
-        username as username,
-        email as email,
-        dob as dob,
-        gender as gender,
-        profile_image as profileImage,
-        is_active as isActive,
-        created_at as createdAt,
-        updated_at as updatedAt
-    From users
-    WHERE
-        (
-            name LIKE CONCAT('%', :search, '%')
-            OR email LIKE CONCAT('%', :search, '%')
-        )
-
+    SELECT 
+        name AS name,
+        username AS username,
+        email AS email,
+        dob AS dob,
+        gender AS gender,
+        profile_image AS profileImage,
+        is_active AS isActive,
+        created_at AS createdAt,
+        updated_at AS updatedAt
+    FROM users
+    WHERE is_deleted = 'N'
     """,
-    countQuery = """
-            SELECT count(*) FROM users
-            WHERE
-                (
-                    name LIKE CONCAT('%', :search, '%')
-                    OR email LIKE CONCAT('%', :search, '%')
-                )
-        
-            """,
-    nativeQuery = true)
-    Page<UserProjection> getAllUsers(
-            @Param("search") String search,
-            Pageable pageable
-    );
+            countQuery = """
+    SELECT COUNT(*) 
+    FROM users
+    WHERE is_deleted = 'N'
+    """,
+            nativeQuery = true)
+    Page<UserProjection> getAllUsers(Pageable pageable);
 
 }

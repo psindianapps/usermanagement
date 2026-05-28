@@ -7,11 +7,13 @@ import com.example.UserManagement.dto.response.UserResponse;
 import com.example.UserManagement.entity.UserEntity;
 import com.example.UserManagement.projection.UserProjection;
 import com.example.UserManagement.repository.UserRepo;
+import com.example.UserManagement.specification.UserSpecification;
 import com.example.UserManagement.util.FileUrlUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,21 +34,26 @@ public class UserService {
     @Autowired private FileConfig fileConfig;
     @Autowired private AppConfig appConfig;
 
-    public Page<UserResponse> alluser(
+    public List<UserResponse> alluser(
             Map<String, String> filter
     ) {
-        int page = Integer.parseInt(filter.get("page"));
-        int size = appConfig.getPageSize();
+        int page = Integer.parseInt(filter.getOrDefault("page", "1"))-1;
+//        int size = appConfig.getPageSize();
+        int size = Integer.parseInt(filter.getOrDefault("size","15"));
         Pageable pageable =
                 PageRequest.of(page, size);
 
-        Page<UserProjection> projection =
-                userRepo.getAllUsers(pageable);
+        Specification<UserEntity> specification =
+                UserSpecification.userSpecification(filter);
+
+        Page<UserEntity> projection =
+                userRepo.findAll(specification,pageable);
+
 
         DateTimeFormatter formatter =
                 DateTimeFormatter.ofPattern("dd MMM, yyyy");
 
-        return projection.map(user -> {
+        return projection.getContent().stream().map(user -> {
 
             UserResponse response =
                     new UserResponse();
@@ -79,21 +86,13 @@ public class UserService {
             );
 
             return response;
-        });
+
+        }).toList();
     }
 
     public void createUser(UserRequest userRequest) throws IOException {
         MultipartFile profileImage = userRequest.getProfileImage();
         String uploadDir = "uploads/";
-//        File directory = new File(uploadDir);
-//        if(!directory.exists()) {
-//            directory.mkdirs();
-//        }
-//
-//        String fileName = System.currentTimeMillis()+ "_"+ profileImage.getOriginalFilename();
-//        String filePath = uploadDir + fileName;
-//        Path path = Paths.get(uploadDir, fileName);
-//        Files.copy(profileImage.getInputStream(), path);
         Map<String, String> response;
         try {
              response =  fileConfig.uploadImage(uploadDir,profileImage);

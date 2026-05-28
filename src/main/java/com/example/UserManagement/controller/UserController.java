@@ -32,7 +32,7 @@ public class UserController {
 
         Map<String,Object> response = new HashMap<>();
         try{
-            Page<UserResponse> userResponses = userService.alluser(request);
+            List<UserResponse> userResponses = userService.alluser(request);
             response.put("status",200);
             response.put("data",userResponses);
         } catch (Exception e) {
